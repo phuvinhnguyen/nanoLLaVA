@@ -1,18 +1,18 @@
 #!/bin/bash
 
-MODEL_TYPE=phi-2
+MODEL_TYPE=qwen1.5-0.5b
 OUTPUT_DIR=bunny-$MODEL_TYPE-pretrain
 
 mkdir -p ./checkpoints-pretrain/$OUTPUT_DIR
 
 deepspeed bunny/train/train.py \
     --deepspeed ./script/deepspeed/zero2.json \
-    --model_name_or_path /path/to/base_llm_model \
+    --model_name_or_path Qwen/Qwen1.5-0.5B-Chat \
     --model_type $MODEL_TYPE \
     --version plain \
     --data_path ./data/pretrain/bunny_pretrain_laion_2m.json \
     --image_folder ./data/pretrain/images \
-    --vision_tower /path/to/siglip-so400m-patch14-384 \
+    --vision_tower google/siglip-so400m-patch14-384 \
     --mm_projector_type mlp2x_gelu \
     --tune_mm_mlp_adapter True \
     --image_aspect_ratio square \
@@ -36,4 +36,4 @@ deepspeed bunny/train/train.py \
     --gradient_checkpointing True \
     --dataloader_num_workers 4 \
     --lazy_preprocess True \
-    --report_to none | tee 2>&1 ./checkpoints-pretrain/$OUTPUT_DIR/log.txt
+    --report_to wandb
