@@ -7,6 +7,7 @@ class SeparatorStyle(Enum):
     """Different separator style."""
     TWO = auto()
     PLAIN = auto()
+    MPT = auto()
 
 
 @dataclasses.dataclass
@@ -46,6 +47,16 @@ class Conversation:
                     ret += role + ": " + message + seps[i % 2]
                 else:
                     ret += role + ":"
+
+        elif self.sep_style == SeparatorStyle.MPT:
+            ret = self.system + self.sep
+            for role, message in messages:
+                if message:
+                    if type(message) is tuple:
+                        message, _, _ = message
+                    ret += role + message + self.sep
+                else:
+                    ret += role
 
         elif self.sep_style == SeparatorStyle.PLAIN:
             seps = [self.sep, self.sep2]
@@ -200,11 +211,23 @@ conv_plain = Conversation(
     sep="\n",
 )
 
+conv_chatml_direct = Conversation(
+    system="""<|im_start|>system
+Answer the questions.""",
+    roles=("<|im_start|>user\n", "<|im_start|>assistant\n"),
+    version="mpt",
+    messages=(),
+    offset=0,
+    sep_style=SeparatorStyle.MPT,
+    sep="<|im_end|>",
+)
+
 default_conversation = conv_bunny
 conv_templates = {
     "default": conv_bunny,
     "bunny": conv_bunny,
     "plain": conv_plain,
+    "chatml_direct": conv_chatml_direct,
 }
 
 if __name__ == "__main__":
