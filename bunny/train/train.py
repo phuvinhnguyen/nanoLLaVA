@@ -66,6 +66,8 @@ class TrainingArguments(transformers.TrainingArguments):
     lora_dropout: float = 0.05
     lora_weight_path: str = ""
     lora_bias: str = "none"
+    use_dora: bool = False
+    use_rslora: bool = False
     mm_projector_lr: Optional[float] = None
     group_by_modality_length: bool = field(default=False)
 
@@ -282,6 +284,8 @@ def train():
             lora_dropout=training_args.lora_dropout,
             bias=training_args.lora_bias,
             task_type="CAUSAL_LM",
+            use_dora=training_args.use_dora,
+            use_rslora=training_args.use_rslora,
         )
         if training_args.bits == 16:
             if training_args.bf16:
